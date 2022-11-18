@@ -1,0 +1,17 @@
+body {
+    display: inline;;
+}
+.grid_body {
+    display: grid;
+    border: 2px solid rgb(92, 9, 9);
+    width: 50%;
+    height: auto;
+}
+
+button {
+    /* width: 20%; */
+    /* height: auto; */
+    border: 1px solid black;
+    border-radius: 5px;
+    box-shadow: 5px 5px;
+}
