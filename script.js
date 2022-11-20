@@ -1,10 +1,10 @@
 const [a,b] = [2,3]
 
-const add       = (num1, num2) => num1 +  num2;
-const subtract  = (num1, num2) => num1 -  num2;
-const multiply  = (num1, num2) => num1 *  num2;
-const divide    = (num1, num2) => num1 /  num2;
-const exponent  = (num1, num2) => num1 ** num2;
+const add       = (num1, num2) => (num1 +  num2)//.toFixed(3);
+const subtract  = (num1, num2) => (num1 -  num2)//.toFixed(3);
+const multiply  = (num1, num2) => (num1 *  num2)//.toFixed(3);
+const divide    = (num1, num2) => (num1 /  num2)//.toFixed(3);
+const exponent  = (num1, num2) => (num1 ** num2)//.toFixed(3);
 //might need tweaking
 const operate   = (operator, num1, num2) => {
     switch (operator) {
@@ -33,10 +33,8 @@ const buttons = document.querySelectorAll('button');
 
 //in order to limit number to len of 9 digits, split number and sign to 2 different var
 let curValue = '';
-// let sign = '';
+let sign = '';
 let opStack = [];
-// let firstNum = secondNum = 0;
-// let currentOperator = '';
 
 //helper functions
 const printDebug = () => {
@@ -47,17 +45,19 @@ const refreshVars = (stack=false) => {
     if (stack) opStack.length = 0
     curValue = '';
 } 
-const displayFullValue = () => {
-    // console.log(`curVal : ${curValue} type: ${typeof(curValue)} with len ${curValue.length}`)
-    //TODO: need to fix display of float, +/- and choose a number len
-    curValue.length >= 10 ? display_box.textContent = `err:toolarge`:
-    display_box.textContent = `${+curValue}`;
+const displayFullValue = (result=false) => {
+    console.log(curValue)
+    if (result && curValue.length >= 10) {
+        if (curValue.includes('.')) { //float
+            curValue = Math.fround(curValue).toFixed(5)
+            display_box.textContent = +curValue
+        } else display_box.textContent = `error:BIG`
+    } else display_box.textContent = `${sign}${+curValue}`;
 }
-const checkLen = numString => numString.length < 10;
+const checkLen = numString => numString.length < 9;
 
 
 //function for buttons
-//passed
 const calculation = (num1,op,num2) => {
     switch (op) {
         case "+":
@@ -96,9 +96,7 @@ const pressDecimal = button => {
 }
 //passed
 const pressSign = () => {
-    curValue.includes("-") ? curValue = curValue.replace("-",'') :
-    curValue = `-${+curValue}`
-    // printDebug();
+    sign ? sign = "" : sign = '-' ;
     displayFullValue();
 }
 //passes
@@ -107,13 +105,15 @@ const pressClear = button => {
     if (button.id === "clear") refreshVars(true);
     refreshVars();
     displayFullValue();
-    // printDebug();
 };
 
 
 // 
 const pressEval = button => {
-    if (opStack.length === 0) opStack.push(+curValue)
+    if (opStack.length === 0) {
+        opStack.push(+(sign+curValue))
+        console.log(opStack)
+    }
     else if (opStack.length === 1) { 
         //pass
     } else if (opStack.length === 2) {
@@ -121,20 +121,17 @@ const pressEval = button => {
             operator    ,
             secondNum   ;
         if (curValue === "") {
-            
             [firstNum, operator, secondNum] = [+opStack[0],opStack[1],+opStack[0]];
-            console.log(firstNum, operator, secondNum)
         } else {
-            opStack.push(+curValue);
+            opStack.push(+(sign+curValue));
             [firstNum, operator, secondNum] = [...opStack];
-            console.log(firstNum, operator, secondNum)
         }
+        sign = "";
         curValue = calculation(firstNum, operator, secondNum).toString()
         opStack.length = 0;
         opStack.push(curValue);
     }
-    displayFullValue();
-    // printDebug();
+    displayFullValue(true);
 }
 
 
@@ -144,7 +141,7 @@ const pressOperator = button => {
     //when press add the current val to the stack
     //if last value in the stack is not a number. pop and add the new one
     if (opStack.length === 0) {
-        opStack.push(+curValue,operator) //passes
+        opStack.push(+(sign+curValue),operator) //passes
     } else if (opStack.length === 1) {
         opStack.push(operator)          //passes
     } else if (opStack.length === 2) {
@@ -155,9 +152,7 @@ const pressOperator = button => {
             opStack.push(operator)
         }
     }
-    curValue = "";
-    // sign = "";
-    // printDebug();
+    curValue = sign = "";
 }
 //
 
