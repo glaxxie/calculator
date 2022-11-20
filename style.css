@@ -66,6 +66,7 @@ button {
 }
 
 button:active {
+    background-color: rgb(131, 233, 199);
     transform: translate(3px, 3px);
     box-shadow: none;
 }
